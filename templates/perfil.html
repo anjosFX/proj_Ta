@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Perfil do Usuário</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='perfil.css') }}">
+  <link rel="icon" type="image/x-icon" href="static\images\favicon.jpg">
+
+</head>
+<body>
+
+  <div class="profile-container">
+    <!-- Título do perfil do usuário -->
+    <h2>Perfil do Usuário</h2>
+
+    <!-- Formulário para atualizar informações do perfil -->
+    <form method="post">
+      <input type="text" name="username" value="{{ usuario.username }}" placeholder="Nome de usuário" required>
+      <input type="email" name="email" value="{{ usuario.email }}" placeholder="Email" required>
+      <button type="submit">Salvar Alterações</button>
+    </form>
+
+    <!-- Formulário para excluir a conta -->
+    <form method="post" action="{{ url_for('excluir') }}">
+      <button type="submit" class="delete-btn">Excluir Conta</button>
+    </form>
+
+    <!-- Links adicionais para navegação -->
+    <div class="links">
+      <a href="{{ url_for('logout') }}">Sair</a><br>
+      <a href="/">Início</a>
+    </div>
+
+    <!-- Exibindo mensagens flash, se houver -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="messages">
+          {% for m in messages %}
+            <li>{{ m }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+  </div>
+</body>
+</html>

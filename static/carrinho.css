@@ -1,0 +1,206 @@
+:root {
+  --bg: #121212;
+  --card-bg: #1e1e1e;
+  --text: #e0e0e0;
+  --accent: #8458B3;
+  --btn-bg: #2a2a2a;
+  --btn-hover: #3a3a3a;
+  --border: #333;
+}
+
+/* Layout geral e sticky footer */
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+  display: flex;
+}
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+main { flex: 1; padding: 20px; }
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--card-bg);
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.navbar .logo { color: var(--accent); font-weight: bold; font-size: 1.2rem; }
+
+.navbar .menu a {
+  color: var(--text);
+  margin-left: 15px;
+  text-decoration: none;
+  transition: color .2s;
+}
+.navbar .menu a:hover { color: var(--accent); }
+
+/* Conteúdo do Carrinho */
+.cart-container h1 {
+  text-align: center;
+  color: var(--accent);
+  margin-bottom: 20px;
+  text-shadow:
+    0 0 8px rgba(132,88,179,0.8),
+    0 0 12px rgba(132,88,179,0.6);
+}
+.cart-container {
+  max-width: 1000px;
+  margin: auto;
+  overflow-x: auto;
+}
+
+
+/* Tabela estilizada */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card-bg);
+}
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+th {
+  background: var(--btn-bg);
+  color: var(--accent);
+}
+td {
+  vertical-align: middle;
+}
+
+/* Inputs e botões na tabela */
+input[type="number"], select.form-select {
+  width: 60px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--btn-bg);
+  color: var(--text);
+}
+.actions-wrap {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.btn-remove {
+  background: #c0392b;
+  border: 1px solid #e74c3c;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background .2s;
+}
+.btn-remove:hover {
+  background: #e74c3c;
+}
+
+/* Ações gerais do carrinho */
+.cart-actions {
+  text-align: center;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+.cart-actions .btn-primary {
+  background: var(--btn-bg);
+  color: var(--text);
+  border: 1px solid var(--accent);
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background .2s;
+}
+.cart-actions .btn-primary:hover {
+  background: var(--btn-hover);
+}
+.cart-actions .btn-link {
+  color: var(--accent);
+  text-decoration: none;
+  align-self: center;
+}
+.cart-actions .btn-link:hover {
+  text-decoration: underline;
+}
+
+/* Footer */
+.footer {
+  background: var(--card-bg);
+  text-align: center;
+  padding: 15px;
+  border-top: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  table, thead, tbody, th, td, tr { display: block; }
+  thead tr { position: absolute; top: -9999px; left: -9999px; }
+  tr {
+    margin-bottom: 16px;
+    background: var(--card-bg);
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+  }
+  td::before {
+    content: attr(data-label);
+    flex: 1 0 120px;
+    font-weight: bold;
+    color: var(--accent);
+  }
+  .actions-wrap { justify-content: space-around; }
+}
+
+
+.form-carrinho_compras {
+  box-shadow:
+    0 0 5px rgba(132,88,179,0.5),
+    0 0 20px rgba(132,88,179,0.3);
+  animation: glow-pulse 6s ease-in-out infinite alternate;
+}
+
+/* Animação de brilho pulsante */
+@keyframes glow-pulse {
+  from {
+    box-shadow:
+      0 0 5px rgba(132,88,179,0.4),
+      0 0 10px rgba(132,88,179,0.2);
+  }
+  to {
+    box-shadow:
+      0 0 10px rgba(132,88,179,0.8),
+      0 0 25px rgba(132,88,179,0.6);
+  }
+}
+
+.btn-comprar {
+  background: #43a843;
+  border: 1px solid #327d32;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background .2s;
+}
+.btn-comprar:hover {
+  background: #327d32;
+}

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+  <link rel="icon" type="image/x-icon" href="static\images\favicon.jpg">
+
+</head>
+<body>
+  <div class="login-container">
+    <h2>Login</h2>
+    <!-- Formulario de login com todo POST e a o direcionada para a rota /login -->
+    <form method="POST" action="/login">
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="password" placeholder="Senha" required>
+      <button type="submit">Entrar</button>
+    </form>
+
+    <!-- Links para cadastro e inicio -->
+    <div class="links">
+      <!-- Link para pagina de cadastro -->
+      <a href="{{ url_for('cadastro') }}">Não tem conta? Cadastre-se</a><br>
+      <!-- Link para in cio -->
+      <a href="/">Inicio</a>
+    </div>
+
+    <!-- Mensagens flash, se houver -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <!-- Lista com as mensagens -->
+        <ul class="messages">
+          <!-- Itera sobre as mensagens e exibe cada uma em uma lista -->
+          {% for m in messages %}
+            <li>{{ m }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+  </div>
+</body>
+</html>

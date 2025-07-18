@@ -1,0 +1,144 @@
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+
+/* Estilo geral do corpo da página */
+body {
+  background: #121212; /* Cor de fundo do corpo */
+  color: #e0e0e0; /* Cor do texto */
+  font-family: Arial, sans-serif; /* Fonte do texto */
+  display: flex; /* Exibição flexível para centralizar conteúdo */
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: center; /* Centraliza verticalmente */
+  min-height: 100vh; /* Altura mínima de 100% da altura da janela */
+}
+
+/* Estilo do container do perfil */
+.profile-container {
+  background: #1e1e1e;
+  padding: 30px 40px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  max-width: 360px;
+  width: 100%;
+  position: relative;
+  box-shadow:
+    0 0 15px rgba(132,88,179,0.5),
+    0 0 30px rgba(132,88,179,0.3);
+  animation: glow-pulse 6s ease-in-out infinite alternate;
+}
+
+/* Estilo do título do perfil */
+.profile-container h2 {
+  color: #8458B3; /* Cor do texto do título */
+  text-align: center; /* Alinhamento central do texto */
+  margin-bottom: 20px; /* Espaçamento inferior */
+}
+
+/* Estilo dos campos de entrada de texto e email */
+.profile-container input[type="text"],
+.profile-container input[type="email"] {
+  width: 100%; /* Largura total */
+  padding: 12px; /* Espaçamento interno */
+  margin-bottom: 15px; /* Espaçamento inferior */
+  border: 1px solid #333; /* Cor e espessura da borda */
+  border-radius: 4px; /* Arredondamento dos cantos */
+  background: #2a2a2a; /* Cor de fundo do campo */
+  color: #e0e0e0; /* Cor do texto do campo */
+}
+
+/* Cor do texto placeholder dos campos */
+.profile-container input::placeholder {
+  color: #888; /* Cor do texto placeholder */
+}
+
+/* Estilo do botão padrão */
+.profile-container button {
+  width: 100%; /* Largura total */
+  padding: 12px; /* Espaçamento interno */
+  margin-top: 10px; /* Espaçamento superior */
+  border: none; /* Sem borda */
+  border-radius: 4px; /* Arredondamento dos cantos */
+  background: #8458B3; /* Cor de fundo */
+  color: white; /* Cor do texto */
+  font-size: 16px; /* Tamanho da fonte */
+  cursor: pointer; /* Cursor de ponteiro ao passar o mouse */
+  transition: background .2s; /* Transição suave da cor de fundo */
+}
+
+/* Efeito hover no botão padrão */
+.profile-container button:hover {
+  background: #9a6ed1; /* Cor de fundo ao passar o mouse */
+}
+
+/* Estilo do botão de exclusão */
+.profile-container .delete-btn {
+  background: #c0392b; /* Cor de fundo do botão de exclusão */
+  margin-top: 10px; /* Espaçamento superior */
+}
+
+/* Efeito hover no botão de exclusão */
+.profile-container .delete-btn:hover {
+  background: #e74c3c; /* Cor de fundo ao passar o mouse */
+}
+
+/* Estilo dos links */
+.profile-container .links {
+  text-align: center; /* Alinhamento central dos links */
+  margin-top: 15px; /* Espaçamento superior */
+}
+
+/* Estilo dos links */
+.profile-container .links a {
+  color: #8458B3; /* Cor do texto do link */
+  text-decoration: none; /* Sem sublinhado */
+}
+
+/* Efeito hover nos links */
+.profile-container .links a:hover {
+  text-decoration: underline; /* Sublinhado ao passar o mouse */
+}
+
+/* Estilo da lista de mensagens */
+.profile-container .messages {
+  margin-top: 15px; /* Espaçamento superior */
+  list-style: none; /* Sem estilo de lista */
+}
+
+/* Estilo de cada mensagem */
+.profile-container .messages li {
+  background: #3a2a3a; /* Cor de fundo da mensagem */
+  padding: 10px; /* Espaçamento interno */
+  border-radius: 4px; /* Arredondamento dos cantos */
+  margin-bottom: 8px; /* Espaçamento inferior */
+  text-align: center; /* Alinhamento central do texto */
+}
+
+
+
+/* Animação de brilho pulsante */
+@keyframes glow-pulse {
+  from {
+    box-shadow:
+      0 0 10px rgba(132,88,179,0.4),
+      0 0 20px rgba(132,88,179,0.2);
+  }
+  to {
+    box-shadow:
+      0 0 20px rgba(132,88,179,0.8),
+      0 0 40px rgba(132,88,179,0.6);
+  }
+}
+
+/* Título com brilho de texto */
+.profile-container h2 {
+  color: #fff;
+  text-shadow:
+    0 0 8px rgba(132,88,179,0.8),
+    0 0 12px rgba(132,88,179,0.6);
+}

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='cadastro.css') }}">
+  <link rel="icon" type="image/x-icon" href="static\images\favicon.jpg">
+</head>
+<body>
+  <div class="signup-container">
+    <!-- formulário de cadastro -->
+    <h2>Cadastrar Conta</h2>
+    <!-- Formulário de cadastro com método POST e ação direcionada para a rota /cadastro -->
+    <form method="POST" action="/cadastro">
+      <input type="text" name="username" placeholder="Nome" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="senha" placeholder="Senha" required>
+      <button type="submit">Cadastrar</button>
+    </form>
+    <!-- Links adicionais -->
+    <div class="links">
+      <!-- Link para a página de login -->
+      <a href="{{ url_for('login') }}">Já tem conta? Fazer login</a><br>
+      <!-- Link para a página inicial -->
+      <a href="/">Inicio</a>
+    </div>
+    <!-- Exibe mensagens flash, se houver -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="messages">
+          <!-- Itera sobre as mensagens e exibe cada uma em uma lista -->
+          {% for m in messages %}
+            <li>{{ m }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+  </div>
+</body>
+</html>

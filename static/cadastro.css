@@ -1,0 +1,123 @@
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Estilo geral da página */
+body {
+  background: #121212;
+  color: #e0e0e0;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Container do formulário */
+.signup-container {
+  background: #1e1e1e;
+  padding: 30px 20px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  max-width: 380px;
+  width: 100%;
+  box-shadow: 0 0 20px rgba(132, 88, 179, 0.3);
+}
+
+/* Título */
+.signup-container h2 {
+  color: #8458B3;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Inputs */
+.signup-container input[type="text"],
+.signup-container input[type="email"],
+.signup-container input[type="password"] {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #333;
+  border-radius: 4px;
+  background: #2a2a2a;
+  color: #e0e0e0;
+}
+
+/* Placeholder */
+.signup-container input::placeholder {
+  color: #888;
+}
+
+/* Botão */
+.signup-container button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 4px;
+  background: #8458B3;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background .2s;
+}
+
+/* Efeito hover no botão */
+.signup-container button:hover {
+  background: #9a6ed1;
+}
+
+/* Links */
+.signup-container .links {
+  text-align: center;
+  margin-top: 15px;
+}
+
+/* Estilo dos links */
+.signup-container .links a {
+  color: #8458B3;
+  text-decoration: none;
+}
+
+/* Efeito hover nos links */
+.signup-container .links a:hover {
+  text-decoration: underline;
+}
+
+/* Mensagens de erro */
+.signup-container .messages {
+  list-style: none;
+  margin-top: 15px;
+}
+
+/* Estilo de cada mensagem */
+.signup-container .messages li {
+  background: #3a2a3a;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+  .signup-container {
+    padding: 20px;
+  }
+
+  /* Título */
+  .signup-container h2 {
+    font-size: 20px;
+  }
+
+  /* Botão */
+  .signup-container button {
+    font-size: 14px;
+  }
+}
+

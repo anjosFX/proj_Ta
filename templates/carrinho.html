@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Carrinho</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='carrinho.css') }}">
+  <link rel="icon" type="image/x-icon" href="static\images\favicon.jpg">
+</head>
+<body>
+  <div class="wrapper">
+    <nav class="navbar">
+      <div class="logo"><img src="static\images\logo.png" alt="logo" width="100" height="50"></div>
+      <div class="menu">
+        <a href="/">Início</a>
+        <a href="/carrinho">Carrinho</a>
+        <a href="/perfil">Perfil</a>
+        <a href="/logout">Sair</a>
+      </div>
+    </nav>
+
+    <main class="cart-container">
+      <h1>Meu Carrinho</h1>
+      <form action="/atualizar_carrinho_geral" method="POST">
+        <table class="form-carrinho_compras">
+          <thead>
+            <tr>
+              <th>Produto</th>
+              <th>Preço</th>
+              <th>Qtd.</th>
+              <th>Total</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody >
+            {% for item in itens %}
+            <tr>
+              <td data-label="Produto">{{ item[1] }}</td>
+              <td data-label="Preço">R$ {{ item[2] }}</td>
+              <td data-label="Qtd.">
+                <input type="number" name="quantidade_{{ item[0] }}" value="{{ item[3] }}" min="0">
+              </td>
+              <td data-label="Total">R$ {{ item[2] * item[3] }}</td>
+              <td data-label="Ações">
+                <div class="actions-wrap">
+                  <form action="/remover_carrinho" method="POST">
+                    <input type="hidden" name="item_id" value="{{ item[0] }}">
+                    <button type="submit" class="btn-remove">Remover</button>
+                  </form>
+                  <select class="form-select" name="tamanho_{{ item[0] }}">
+                    <option value="P" {% if item[4]=='P' %}selected{% endif %}>P</option>
+                    <option value="M" {% if item[4]=='M' %}selected{% endif %}>M</option>
+                    <option value="G" {% if item[4]=='G' %}selected{% endif %}>G</option>
+                    <option value="GG" {% if item[4]=='GG' %}selected{% endif %}>GG</option>
+                  </select>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <div class="cart-actions">
+          <button type="submit" class="btn-primary">Atualizar Carrinho</button>
+          <button formaction="/finalizar_compra" formmethod="post" class="btn-comprar">Finalizar Compra</button>
+          <a href="/" class="btn-link">Continuar Comprando</a>
+        </div>
+      </form>
+          <!-- Mensagens flash, se houver -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <!-- Lista com as mensagens -->
+        <ul class="messages">
+          <!-- Itera sobre as mensagens e exibe cada uma em uma lista -->
+          {% for m in messages %}
+            <li>{{ m }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    </main>
+
+    <footer class="footer">
+      <p>© 2025 FeKnight Store Todos os direitos reservados</p>
+    </footer>
+  </div>
+</body>
+</html>
