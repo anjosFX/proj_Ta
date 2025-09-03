@@ -1,124 +1,172 @@
-from flask import Flask, render_template, request, redirect, session, url_for, flash
-from flask_mysqldb import MySQL
-import MySQLdb.cursors
+from flask import Flask, render_template, request, redirect, session, flash
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import relationship
+from flask_mail import Mail, Message
+from dotenv import load_dotenv
+import os
+
+
+
 
 app = Flask(__name__)
 app.secret_key = 'sua_chave_secreta'
 
-# CONFIGURAÇÕES DO BANCO DE DADOS
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'         # ou 'root'
-app.config['MYSQL_PASSWORD'] = 'Fsdv5632'    # ou sua nova password do root
-app.config['MYSQL_DB'] = 'camisas_db'
+# Configurando o banco SQLite local
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-mysql = MySQL(app)
+db = SQLAlchemy(app)
+
+
+
+
+load_dotenv()  # carrega as variáveis do .env
+
+# Config Flask-Mail
+app.config.update(
+    MAIL_SERVER=os.getenv('MAIL_SERVER'),
+    MAIL_PORT=int(os.getenv('MAIL_PORT')),
+    MAIL_USE_TLS=os.getenv('MAIL_USE_TLS') == 'True',
+    MAIL_USE_SSL=os.getenv('MAIL_USE_SSL') == 'True',
+    MAIL_USERNAME=os.getenv('MAIL_USERNAME'),
+    MAIL_PASSWORD=os.getenv('MAIL_PASSWORD'),
+    MAIL_DEFAULT_SENDER=os.getenv('MAIL_DEFAULT_SENDER')
+)
+
+mail = Mail(app)
+
+
+
+# Modelos (Tabelas)
+
+class Usuario(db.Model):
+    __tablename__ = 'usuario'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    password = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(255))
+    carrinho = relationship('Carrinho', backref='usuario', cascade='all, delete-orphan')
+
+class Produto(db.Model):
+    __tablename__ = 'produto'
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(100))
+    descricao = db.Column(db.Text)
+    preco = db.Column(db.Numeric(10, 2))
+    imagem = db.Column(db.String(255))
+    carrinho = relationship('Carrinho', backref='produto', cascade='all, delete-orphan')
+
+class Carrinho(db.Model):
+    __tablename__ = 'carrinho'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
+    produto_id = db.Column(db.Integer, db.ForeignKey('produto.id'), nullable=False)
+    quantidade = db.Column(db.Integer, nullable=False)
+
+
+# Rotas (Exemplo login, produtos, carrinho)
+
+
+
+
+
+
 
 @app.route('/')
 def produtos():
-    # Obtém todos os produtos da tabela 'produto'
-    cursor = mysql.connection.cursor()
-    cursor.execute("SELECT * FROM produto")
-    produtos = cursor.fetchall()
+    produtos = Produto.query.all()
     return render_template('produtos.html', produtos=produtos)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        # Lê as credenciais do formulário de login
         email = request.form['email']
         password = request.form['password']
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        # Verifica se o usuário existe no banco de dados
-        cursor.execute("SELECT * FROM usuario WHERE email = %s AND password = %s", (email, password))
-        usuario = cursor.fetchone()
+        usuario = Usuario.query.filter_by(email=email, password=password).first()
         if usuario:
-            # Armazena o usuário na sessão e redireciona para o perfil
-            session['usuario'] = usuario
+            session['usuario'] = {'id': usuario.id, 'username': usuario.username, 'email': usuario.email}
             return redirect('/perfil')
         else:
-            flash("Email ou Senha inválidos.")
+            flash('Email ou senha inválidos.')
     return render_template('login.html')
 
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
     if request.method == 'POST':
-        # Lê os dados do formulário de cadastro
         username = request.form['username']
         email = request.form['email']
         password = request.form['senha']
-        cursor = mysql.connection.cursor()
-        # Insere um novo usuário no banco de dados
-        cursor.execute("INSERT INTO usuario (username, email, password) VALUES (%s, %s, %s)", (username, email, password))
-        mysql.connection.commit()
-        flash('Cadastro realizado com sucesso! Faça login.')
+
+        if Usuario.query.filter_by(username=username).first():
+            flash('Usuário já existe.')
+            return redirect('/cadastro')
+
+        novo_usuario = Usuario(username=username, email=email, password=password)
+        db.session.add(novo_usuario)
+        db.session.commit()
+
+        # Enviar e-mail de confirmação
+        msg = Message(
+            subject="Confirmação de Cadastro",
+            recipients=[email],
+            body=f"Olá {username}, seja bem-vindo à Loja de Camisas!"
+        )
+        mail.send(msg)
+
+        flash('Cadastro realizado com sucesso! Verifique seu e-mail.')
         return redirect('/login')
+
     return render_template('cadastro.html')
 
 @app.route('/perfil', methods=['GET', 'POST'])
 def perfil():
     if 'usuario' not in session:
         return redirect('/login')
+    usuario = Usuario.query.get(session['usuario']['id'])
 
     if request.method == 'POST':
-        # Atualiza os dados do perfil do usuário
-        username = request.form['username']
-        email = request.form['email']
-        usuario_id = session['usuario']['id']
-        cursor = mysql.connection.cursor()
-        cursor.execute("UPDATE usuario SET username=%s, email=%s WHERE id=%s", (username, email, usuario_id))
-        mysql.connection.commit()
-        session['usuario']['username'] = username
-        session['usuario']['email'] = email
+        usuario.username = request.form['username']
+        usuario.email = request.form['email']
+        db.session.commit()
+        session['usuario']['username'] = usuario.username
+        session['usuario']['email'] = usuario.email
         flash('Perfil atualizado!')
         return redirect('/perfil')
 
-    return render_template('perfil.html', usuario=session['usuario'])
+    return render_template('perfil.html', usuario=usuario)
 
 @app.route('/excluir', methods=['POST'])
 def excluir():
     if 'usuario' in session:
-        # Exclui a conta do usuário
-        usuario_id = session['usuario']['id']
-        cursor = mysql.connection.cursor()
-        cursor.execute("DELETE FROM usuario WHERE id=%s", (usuario_id,))
-        mysql.connection.commit()
+        usuario = Usuario.query.get(session['usuario']['id'])
+        db.session.delete(usuario)
+        db.session.commit()
         session.clear()
-        flash("Conta excluída com sucesso.")
+        flash('Conta excluída com sucesso.')
     return redirect('/login')
 
 @app.route('/logout')
 def logout():
-    # Limpa a sessão do usuário
     session.clear()
     return redirect('/login')
-
-if __name__ == '__main__':
-    app.run(debug=True)
 
 @app.route('/adicionar_carrinho', methods=['POST'])
 def adicionar_carrinho():
     if 'usuario' not in session:
         return redirect('/login')
-    
     user_id = session['usuario']['id']
-    produto_id = request.form['produto_id']
+    produto_id = int(request.form['produto_id'])
     quantidade = int(request.form['quantidade'])
 
-    cursor = mysql.connection.cursor()
-
-    # Verifica se o item já está no carrinho
-    cursor.execute("SELECT * FROM carrinho WHERE user_id = %s AND produto_id = %s", (user_id, produto_id))
-    item = cursor.fetchone()
+    item = Carrinho.query.filter_by(user_id=user_id, produto_id=produto_id).first()
 
     if item:
-        # Atualiza a quantidade se o produto já estiver no carrinho
-        nova_qtd = item[3] + quantidade
-        cursor.execute("UPDATE carrinho SET quantidade = %s WHERE id = %s", (nova_qtd, item[0]))
+        item.quantidade += quantidade
     else:
-        # Adiciona o novo produto ao carrinho
-        cursor.execute("INSERT INTO carrinho (user_id, produto_id, quantidade) VALUES (%s, %s, %s)", (user_id, produto_id, quantidade))
+        item = Carrinho(user_id=user_id, produto_id=produto_id, quantidade=quantidade)
+        db.session.add(item)
 
-    mysql.connection.commit()
+    db.session.commit()
     return redirect('/')
 
 @app.route('/carrinho')
@@ -127,76 +175,98 @@ def ver_carrinho():
         return redirect('/login')
 
     user_id = session['usuario']['id']
-    cursor = mysql.connection.cursor()
-    # Obtém os itens do carrinho do usuário
-    cursor.execute("""
-        SELECT carrinho.id, produto.nome, produto.preco, carrinho.quantidade
-        FROM carrinho
-        JOIN produto ON carrinho.produto_id = produto.id
-        WHERE carrinho.user_id = %s
-    """, (user_id,))
-    itens = cursor.fetchall()
+    itens = Carrinho.query.filter_by(user_id=user_id).all()
 
-    # Calcula o total do carrinho
-    total = sum(item[2] * item[3] for item in itens) if itens else 0
+    total = sum(item.produto.preco * item.quantidade for item in itens)
 
     return render_template('carrinho.html', itens=itens, total=total)
 
 @app.route('/remover_carrinho', methods=['POST'])
 def remover_carrinho():
-    # Remove um item do carrinho
-    item_id = request.form['item_id']
-    cursor = mysql.connection.cursor()
-    cursor.execute("DELETE FROM carrinho WHERE id = %s", (item_id,))
-    mysql.connection.commit()
+    item_id = int(request.form['item_id'])
+    item = Carrinho.query.get(item_id)
+    if item:
+        db.session.delete(item)
+        db.session.commit()
     return redirect('/carrinho')
 
 @app.route('/atualizar_carrinho_geral', methods=['POST'])
 def atualizar_carrinho_geral():
-    # Atualiza todos os itens do carrinho
-    user_id = session['usuario']['id']
-    cursor = mysql.connection.cursor()
+    if 'usuario' not in session:
+        return redirect('/login')
 
-    # Pega todos os itens do carrinho do usuário
-    cursor.execute("SELECT id FROM carrinho WHERE user_id = %s", (user_id,))
-    itens = cursor.fetchall()
+    user_id = session['usuario']['id']
+    itens = Carrinho.query.filter_by(user_id=user_id).all()
 
     for item in itens:
-        item_id = item[0]
-        quantidade_str = request.form.get(f'quantidade_{item_id}')
-
+        quantidade_str = request.form.get(f'quantidade_{item.id}')
         if quantidade_str is None:
             continue
-        
         try:
             quantidade = int(quantidade_str)
         except ValueError:
             continue
-
         if quantidade > 0:
-            # Atualiza a quantidade do item no carrinho
-            cursor.execute("UPDATE carrinho SET quantidade = %s WHERE id = %s", (quantidade, item_id))
+            item.quantidade = quantidade
         else:
-            # Remove o item do carrinho se a quantidade for zero
-            cursor.execute("DELETE FROM carrinho WHERE id = %s", (item_id,))
+            db.session.delete(item)
 
-    mysql.connection.commit()
+    db.session.commit()
     return redirect('/carrinho')
 
 @app.route('/finalizar_compra', methods=['POST'])
 def finalizar_compra():
-    # Atualiza todos os itens do carrinho
-    user_id = session['usuario']['id']
-    cursor = mysql.connection.cursor()
+    if 'usuario' not in session:
+        return redirect('/login')
 
-    # Pega todos os itens do carrinho do usuário
-    cursor.execute("SELECT id FROM carrinho WHERE user_id = %s", (user_id,))
-    itens = cursor.fetchall()
+    user_id = session['usuario']['id']
+    itens = Carrinho.query.filter_by(user_id=user_id).all()
 
     for item in itens:
-        item_id = item[0]
-        cursor.execute("DELETE FROM carrinho WHERE id = %s", (item_id,))
+        db.session.delete(item)
 
-    mysql.connection.commit()
+    db.session.commit()
     flash('Compra finalizada com sucesso!')
+    msg = Message(
+    subject="Confirmação do Pedido",
+    recipients=[session['usuario']['email']],
+    body=f"Obrigado pela sua compra! Seu pedido foi confirmado."
+    )
+    mail.send(msg)
     return redirect('/carrinho')
+
+
+
+
+@app.route('/recuperar', methods=['GET', 'POST'])
+def recuperar():
+    if request.method == 'POST':
+        email = request.form['email']
+        usuario = Usuario.query.filter_by(email=email).first()
+        if usuario:
+            # Aqui você gera um token/link temporário
+            import secrets
+            token = secrets.token_urlsafe(16)
+            link = f"http://localhost:5000/redefinir/{token}"
+
+            # Envia email
+            msg = Message(
+                subject="Recuperação de Senha",
+                recipients=[email],
+                body=f"Olá, para redefinir sua senha clique no link: {link}\n(O link expira em 30 minutos)"
+            )
+            mail.send(msg)
+
+            flash("Um link de recuperação foi enviado para seu e-mail.")
+        else:
+            flash("E-mail não encontrado.")
+    return render_template('recuperar.html')
+
+
+
+if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()  # Cria as tabelas no banco SQLite, se não existirem
+    app.run(debug=True)
+
+

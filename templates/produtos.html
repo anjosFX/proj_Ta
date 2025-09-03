@@ -4,17 +4,18 @@
   <meta charset="UTF-8">
   <title>Loja de Camisas</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link rel="icon" type="image/x-icon" href="static\images\favicon.jpg">
-
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.jpg') }}">
 </head>
 <body>
   <!-- navbar -->
   <nav class="navbar">
-    <div class="logo"><img src="static\images\logo.png" alt="logo" width="100" height="50"></div>
+    <div class="logo">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="logo" width="100" height="50">
+    </div>
     <div class="menu">
       <a href="/">Início</a>
       {% if session.usuario %}
-        <a href="/carrinho">Carrinho </a>
+        <a href="/carrinho">Carrinho</a>
         <a href="/perfil">Perfil</a>
         <a href="/logout">Sair</a>
       {% else %}
@@ -30,14 +31,14 @@
     <ul class="products">
       {% for produto in produtos %}
       <li class="product-card">
-        <img src="{{ produto[4] or url_for('static', filename='placeholder.png') }}" alt="{{ produto[1] }}">
-        <strong>{{ produto[1] }}</strong>
-        <p>{{ produto[2] }}</p>
-        <p class="price">R$ {{ produto[3] }}</p>
+        <img src="{{ produto.imagem or url_for('static', filename='placeholder.png') }}" alt="{{ produto.nome }}">
+        <strong>{{ produto.nome }}</strong>
+        <p>{{ produto.descricao }}</p>
+        <p class="price">R$ {{ produto.preco }}</p>
 
         {% if session.usuario %}
         <form action="/adicionar_carrinho" method="POST" class="buy-form">
-          <input type="hidden" name="produto_id" value="{{ produto[0] }}">
+          <input type="hidden" name="produto_id" value="{{ produto.id }}">
           <input type="number" name="quantidade" value="1" min="1" hidden>
           <button type="submit">Adicionar</button>
         </form>

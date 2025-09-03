@@ -4,12 +4,14 @@
   <meta charset="UTF-8">
   <title>Carrinho</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='carrinho.css') }}">
-  <link rel="icon" type="image/x-icon" href="static\images\favicon.jpg">
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.jpg') }}">
 </head>
 <body>
   <div class="wrapper">
     <nav class="navbar">
-      <div class="logo"><img src="static\images\logo.png" alt="logo" width="100" height="50"></div>
+      <div class="logo">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="logo" width="100" height="50">
+      </div>
       <div class="menu">
         <a href="/">Início</a>
         <a href="/carrinho">Carrinho</a>
@@ -31,27 +33,31 @@
               <th>Ações</th>
             </tr>
           </thead>
-          <tbody >
+          <tbody>
             {% for item in itens %}
             <tr>
-              <td data-label="Produto">{{ item[1] }}</td>
-              <td data-label="Preço">R$ {{ item[2] }}</td>
+              <td data-label="Produto">{{ item.produto.nome }}</td>
+              <td data-label="Preço">R$ {{ item.produto.preco }}</td>
               <td data-label="Qtd.">
-                <input type="number" name="quantidade_{{ item[0] }}" value="{{ item[3] }}" min="0">
+                <input type="number" name="quantidade_{{ item.id }}" value="{{ item.quantidade }}" min="0">
               </td>
-              <td data-label="Total">R$ {{ item[2] * item[3] }}</td>
+              <td data-label="Total">R$ {{ item.produto.preco * item.quantidade }}</td>
               <td data-label="Ações">
                 <div class="actions-wrap">
                   <form action="/remover_carrinho" method="POST">
-                    <input type="hidden" name="item_id" value="{{ item[0] }}">
+                    <input type="hidden" name="item_id" value="{{ item.id }}">
                     <button type="submit" class="btn-remove">Remover</button>
                   </form>
-                  <select class="form-select" name="tamanho_{{ item[0] }}">
-                    <option value="P" {% if item[4]=='P' %}selected{% endif %}>P</option>
-                    <option value="M" {% if item[4]=='M' %}selected{% endif %}>M</option>
-                    <option value="G" {% if item[4]=='G' %}selected{% endif %}>G</option>
-                    <option value="GG" {% if item[4]=='GG' %}selected{% endif %}>GG</option>
+
+                  {# Se você tiver o campo 'tamanho' no Carrinho, mantenha abaixo #}
+                  {% if item.tamanho is defined %}
+                  <select class="form-select" name="tamanho_{{ item.id }}">
+                    <option value="P" {% if item.tamanho == 'P' %}selected{% endif %}>P</option>
+                    <option value="M" {% if item.tamanho == 'M' %}selected{% endif %}>M</option>
+                    <option value="G" {% if item.tamanho == 'G' %}selected{% endif %}>G</option>
+                    <option value="GG" {% if item.tamanho == 'GG' %}selected{% endif %}>GG</option>
                   </select>
+                  {% endif %}
                 </div>
               </td>
             </tr>
@@ -65,18 +71,16 @@
           <a href="/" class="btn-link">Continuar Comprando</a>
         </div>
       </form>
-          <!-- Mensagens flash, se houver -->
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <!-- Lista com as mensagens -->
-        <ul class="messages">
-          <!-- Itera sobre as mensagens e exibe cada uma em uma lista -->
-          {% for m in messages %}
-            <li>{{ m }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
+
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <ul class="messages">
+            {% for m in messages %}
+              <li>{{ m }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
     </main>
 
     <footer class="footer">
