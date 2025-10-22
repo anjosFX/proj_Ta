@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loja Virtual - Chat Online</title>
+    <style>
+        :root {
+          --bg: #121212;
+          --card-bg: #1e1e1e;
+          --text: #e0e0e0;
+          --accent: #8458B3;
+          --btn-bg: #2a2a2a;
+          --btn-hover: #3a3a3a;
+          --border: #333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+          background: var(--bg);
+          color: var(--text);
+          font-family: Arial, sans-serif;
+          padding-bottom: 100px;
+        }
+
+        /* Navbar */
+        .navbar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: var(--card-bg);
+          padding: 10px 20px;
+          position: sticky;
+          top: 0;
+          border-bottom: 1px solid var(--border);
+          z-index: 100;
+        }
+
+        .navbar .logo { color: var(--accent); font-weight: bold; font-size: 1.2rem; }
+
+        .navbar .menu a {
+          color: var(--text);
+          margin-left: 15px;
+          text-decoration: none;
+          transition: color .2s;
+        }
+
+        .navbar .menu a:hover {
+          color: var(--accent);
+        }
+
+        /* Main content */
+        .content {
+          padding: 80px 20px 40px;
+          max-width: 100%;
+          margin: auto;
+        }
+
+        .content h1 {
+          text-align: center;
+          color: var(--accent);
+          margin-bottom: 30px;
+          text-shadow:
+            0 0 8px rgba(132,88,179,0.8),
+            0 0 12px rgba(132,88,179,0.6);
+        }
+
+        /* Product grid */
+        .products {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 20px;
+          justify-content: center;
+        }
+
+        .product-card {
+          background: var(--card-bg);
+          border: 1px solid var(--border);
+          border-radius: 8px;
+          width: calc(100% / 1 - 40px);
+          max-width: 220px;
+          padding: 15px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+        }
+
+        .product-card img {
+          width: 100%;
+          height: auto;
+          border-radius: 4px;
+          margin-bottom: 10px;
+        }
+
+        .product-card:hover {
+          transform: scale(1.03);
+          transition: transform 0.6s ease;
+          box-shadow: 
+            0 4px 10px rgba(0, 0, 0, 0.3),
+            0 0 15px rgba(132, 88, 179, 0.5);
+        }
+
+        /* Price & form */
+        .price {
+          font-weight: bold;
+          margin: 8px 0;
+        }
+
+        .buy-form {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-top: auto;
+        }
+
+        .buy-form input[type="number"] {
+          width: 50px;
+          padding: 4px;
+          border: 1px solid var(--border);
+          border-radius: 4px;
+          background: var(--btn-bg);
+          color: var(--text);
+        }
+
+        .buy-form button {
+          background: var(--btn-bg);
+          color: var(--text);
+          border: 1px solid var(--accent);
+          padding: 5px 10px;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: background .2s;
+        }
+
+        .buy-form button:hover { background: var(--btn-hover); }
+
+        /* Footer */
+        .footer {
+          background: var(--card-bg);
+          text-align: center;
+          padding: 15px;
+          border-top: 1px solid var(--border);
+          margin-top: 40px;
+          font-size: 0.9rem;
+        }
+
+        /* Chat Window */
+        .chat-container {
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          z-index: 1000;
+        }
+
+        .chat-button {
+          background: var(--accent);
+          color: white;
+          border: none;
+          border-radius: 50%;
+          width: 60px;
+          height: 60px;
+          font-size: 24px;
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+          transition: all 0.3s ease;
+        }
+
+        .chat-button:hover {
+          transform: scale(1.1);
+          box-shadow: 0 6px 16px rgba(132, 88, 179, 0.5);
+        }
+
+        .chat-window {
+          position: absolute;
+          bottom: 70px;
+          right: 0;
+          width: 300px;
+          height: 400px;
+          background: var(--card-bg);
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+          display: none;
+          flex-direction: column;
+          overflow: hidden;
+        }
+
+        .chat-header {
+          background: var(--accent);
+          color: white;
+          padding: 12px 15px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .chat-header h3 {
+          margin: 0;
+          font-size: 1rem;
+        }
+
+        .close-chat {
+          background: none;
+          border: none;
+          color: white;
+          font-size: 1.2rem;
+          cursor: pointer;
+        }
+
+        .chat-messages {
+          flex: 1;
+          padding: 15px;
+          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .message {
+          padding: 8px 12px;
+          border-radius: 18px;
+          max-width: 80%;
+          word-wrap: break-word;
+        }
+
+        .bot-message {
+          background: var(--btn-bg);
+          align-self: flex-start;
+          border-bottom-left-radius: 5px;
+        }
+
+        .user-message {
+          background: var(--accent);
+          align-self: flex-end;
+          border-bottom-right-radius: 5px;
+        }
+
+        .chat-input {
+          display: flex;
+          padding: 10px;
+          border-top: 1px solid var(--border);
+        }
+
+        .chat-input input {
+          flex: 1;
+          padding: 8px 12px;
+          border: 1px solid var(--border);
+          border-radius: 20px;
+          background: var(--btn-bg);
+          color: var(--text);
+          outline: none;
+        }
+
+        .chat-input button {
+          background: var(--accent);
+          color: white;
+          border: none;
+          border-radius: 50%;
+          width: 36px;
+          height: 36px;
+          margin-left: 8px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .chat-input button:hover {
+          background: #6d4a9c;
+        }
+
+        /* Responsividade */
+        @media (min-width: 600px) {
+          .product-card { width: calc(50% - 40px); }
+        }
+        @media (min-width: 900px) {
+          .product-card { width: calc(33.33% - 40px); }
+        }
+        @media (min-width: 1200px) {
+          .product-card { width: calc(25% - 40px); }
+        }
+
+        @media (max-width: 480px) {
+          .chat-window {
+            width: 280px;
+            height: 350px;
+          }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">MINHA LOJA</div>
+        <div class="menu">
+            <a href="#">Início</a>
+            <a href="#">Produtos</a>
+            <a href="#">Sobre</a>
+            <a href="#">Contato</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="content">
+        <h1>Nossos Produtos em Destaque</h1>
+        
+        <div class="products">
+            <!-- Produto 1 -->
+            <div class="product-card">
+                <img src="https://via.placeholder.com/200" alt="Produto 1">
+                <h3>Produto 1</h3>
+                <p>Descrição breve do produto.</p>
+                <div class="price">R$ 99,90</div>
+                <form class="buy-form">
+                    <input type="number" min="1" value="1">
+                    <button type="submit">Comprar</button>
+                </form>
+            </div>
+            
+            <!-- Produto 2 -->
+            <div class="product-card">
+                <img src="https://via.placeholder.com/200" alt="Produto 2">
+                <h3>Produto 2</h3>
+                <p>Descrição breve do produto.</p>
+                <div class="price">R$ 149,90</div>
+                <form class="buy-form">
+                    <input type="number" min="1" value="1">
+                    <button type="submit">Comprar</button>
+                </form>
+            </div>
+            
+            <!-- Produto 3 -->
+            <div class="product-card">
+                <img src="https://via.placeholder.com/200" alt="Produto 3">
+                <h3>Produto 3</h3>
+                <p>Descrição breve do produto.</p>
+                <div class="price">R$ 79,90</div>
+                <form class="buy-form">
+                    <input type="number" min="1" value="1">
+                    <button type="submit">Comprar</button>
+                </form>
+            </div>
+            
+            <!-- Produto 4 -->
+            <div class="product-card">
+                <img src="https://via.placeholder.com/200" alt="Produto 4">
+                <h3>Produto 4</h3>
+                <p>Descrição breve do produto.</p>
+                <div class="price">R$ 199,90</div>
+                <form class="buy-form">
+                    <input type="number" min="1" value="1">
+                    <button type="submit">Comprar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2023 Minha Loja. Todos os direitos reservados.</p>
+    </footer>
+
+    <!-- Chat Container -->
+    <div class="chat-container">
+        <button class="chat-button" id="chatToggle">💬</button>
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-header">
+                <h3>Atendimento Online</h3>
+                <button class="close-chat" id="closeChat">×</button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot-message">
+                    Olá! Como posso ajudar você hoje?
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="messageInput" placeholder="Digite sua mensagem...">
+                <button id="sendMessage">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22 2L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Elementos do chat
+        const chatToggle = document.getElementById('chatToggle');
+        const chatWindow = document.getElementById('chatWindow');
+        const closeChat = document.getElementById('closeChat');
+        const messageInput = document.getElementById('messageInput');
+        const sendMessage = document.getElementById('sendMessage');
+        const chatMessages = document.getElementById('chatMessages');
+
+        // Alternar visibilidade do chat
+        chatToggle.addEventListener('click', () => {
+            chatWindow.style.display = chatWindow.style.display === 'flex' ? 'none' : 'flex';
+        });
+
+        // Fechar chat
+        closeChat.addEventListener('click', () => {
+            chatWindow.style.display = 'none';
+        });
+
+        // Enviar mensagem
+        function sendUserMessage() {
+            const message = messageInput.value.trim();
+            if (message) {
+                // Adicionar mensagem do usuário
+                const userMessage = document.createElement('div');
+                userMessage.classList.add('message', 'user-message');
+                userMessage.textContent = message;
+                chatMessages.appendChild(userMessage);
+                
+                // Limpar campo de entrada
+                messageInput.value = '';
+                
+                // Rolar para baixo
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Simular resposta do bot após um curto atraso
+                setTimeout(() => {
+                    const botMessage = document.createElement('div');
+                    botMessage.classList.add('message', 'bot-message');
+                    
+                    // Respostas automáticas simples
+                    if (message.toLowerCase().includes('preço') || message.toLowerCase().includes('valor')) {
+                        botMessage.textContent = 'Os preços estão disponíveis na página de cada produto. Posso ajudar com alguma informação específica?';
+                    } else if (message.toLowerCase().includes('entrega') || message.toLowerCase().includes('frete')) {
+                        botMessage.textContent = 'Oferecemos entrega para todo o Brasil. O prazo e valor dependem da sua localização.';
+                    } else if (message.toLowerCase().includes('pagamento')) {
+                        botMessage.textContent = 'Aceitamos cartão de crédito, débito, PIX e boleto bancário.';
+                    } else {
+                        botMessage.textContent = 'Obrigado pela sua mensagem! Em breve um de nossos atendentes responderá.';
+                    }
+                    
+                    chatMessages.appendChild(botMessage);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 1000);
+            }
+        }
+
+        // Enviar mensagem ao clicar no botão
+        sendMessage.addEventListener('click', sendUserMessage);
+
+        // Enviar mensagem ao pressionar Enter
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendUserMessage();
+            }
+        });
+    </script>
+</body>
+</html>
