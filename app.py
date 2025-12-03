@@ -11,6 +11,7 @@ import os
 import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+<<<<<<< HEAD
 import matplotlib
 matplotlib.use('Agg') 
 import matplotlib.pyplot as plt
@@ -21,6 +22,8 @@ from io import BytesIO  # Para criar buffer de memória
 import base64
 
 from sklearn.metrics.pairwise import cosine_similarity
+=======
+>>>>>>> b0c365858634ef9b51c400402a2b6361af0512bb
 
 
 
@@ -64,7 +67,13 @@ class Usuario(db.Model):
     username = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(255))
+<<<<<<< HEAD
     is_admin = db.Column(db.Boolean, default=False)
+=======
+    genero = db.Column(db.String(255))
+    time = db.Column(db.String(255))
+    nacionalidade = db.Column(db.String(255))
+>>>>>>> b0c365858634ef9b51c400402a2b6361af0512bb
     carrinho = relationship('Carrinho', backref='usuario', cascade='all, delete-orphan')
 
 class Produto(db.Model):
@@ -103,8 +112,11 @@ class SistemaRecomendacao:
         self.sim_df = None
         self.produto_matrix = None
         
+<<<<<<< HEAD
     
         
+=======
+>>>>>>> b0c365858634ef9b51c400402a2b6361af0512bb
     def gerar_matriz_compras(self):
         """Gera a matriz usuário x produto baseada no histórico de compras"""
         try:
@@ -116,6 +128,7 @@ class SistemaRecomendacao:
                 print("⚠️  Não há produtos ou usuários suficientes para gerar recomendações")
                 return False
             
+<<<<<<< HEAD
             # Cria matriz vazia com características dos produtos
             data = {}
             produto_nomes = []
@@ -133,6 +146,15 @@ class SistemaRecomendacao:
                     'equipe': produto.equipe or '',
                     'categoria': produto.categoria or ''
                 }
+=======
+            # Cria matriz vazia
+            data = {}
+            produto_nomes = []
+            
+            for produto in produtos:
+                data[produto.nome] = [0] * len(usuarios)
+                produto_nomes.append(produto.nome)
+>>>>>>> b0c365858634ef9b51c400402a2b6361af0512bb
             
             # Preenche a matriz com compras do histórico
             historicos = HistoricoCompra.query.all()
@@ -157,6 +179,7 @@ class SistemaRecomendacao:
             
             print(f"📊 Matriz gerada: {len(produtos)} produtos x {len(usuarios)} usuários")
             
+<<<<<<< HEAD
             # Calcula similaridade entre produtos (filtragem colaborativa)
             self.produto_matrix = df.T.fillna(0)
             
@@ -171,6 +194,17 @@ class SistemaRecomendacao:
             
             # Adiciona características para recomendações baseadas em conteúdo
             self.produto_features = produto_features
+=======
+            # Calcula similaridade entre produtos
+            self.produto_matrix = df.T.fillna(0)
+            similaridade = cosine_similarity(self.produto_matrix)
+            
+            self.sim_df = pd.DataFrame(
+                similaridade,
+                index=self.produto_matrix.index,
+                columns=self.produto_matrix.index
+            )
+>>>>>>> b0c365858634ef9b51c400402a2b6361af0512bb
             
             print("✅ Sistema de recomendação inicializado!")
             return True
@@ -179,6 +213,7 @@ class SistemaRecomendacao:
             print(f"❌ Erro ao gerar matriz: {e}")
             return False
     
+<<<<<<< HEAD
     
     
         def _analisar_preferencias_usuario(self, user_id):
@@ -259,10 +294,31 @@ class SistemaRecomendacao:
                 recomendacoes_unicas.extend(produtos_restantes)
             
             return recomendacoes_unicas[:n]
+=======
+    def recomendar_produtos_similares(self, produto_nome, n=3):
+        """Recomenda produtos similares baseado na similaridade"""
+        try:
+            if self.sim_df is None or produto_nome not in self.sim_df.columns:
+                # Fallback: retorna produtos aleatórios
+                produtos = Produto.query.filter(Produto.nome != produto_nome).limit(n).all()
+                return produtos
+            
+            similares = self.sim_df[produto_nome].sort_values(ascending=False)
+            similares = similares.drop(produto_nome)  # remove o próprio produto
+            
+            produtos_recomendados = []
+            for produto_similar in similares.head(n).index:
+                produto = Produto.query.filter_by(nome=produto_similar).first()
+                if produto:
+                    produtos_recomendados.append(produto)
+            
+            return produtos_recomendados
+>>>>>>> b0c365858634ef9b51c400402a2b6361af0512bb
             
         except Exception as e:
             print(f"Erro na recomendação: {e}")
             # Fallback para produtos aleatórios
+<<<<<<< HEAD
             produtos = Produto.query.filter(Produto.nome != produto_nome).limit(n).all()
             return produtos
     
@@ -329,6 +385,15 @@ class SistemaRecomendacao:
         
 sistema_recomendacao = SistemaRecomendacao()
 
+=======
+            produtos = Produto.query.limit(n).all()
+            return produtos
+
+# Instância global do sistema de recomendação
+sistema_recomendacao = SistemaRecomendacao()
+
+
+>>>>>>> b0c365858634ef9b51c400402a2b6361af0512bb
 # CHATBOT CONFIG
 chatbot = ChatBot(
     "LojaVirtual",
@@ -617,6 +682,101 @@ def recuperar():
 @app.route('/faq', methods=['GET', 'POST'])
 def faq():
     return render_template('faq.html')
+<<<<<<< HEAD
+=======
+
+# ROTA DO CHATBOT
+@app.route("/chat", methods=["POST"])
+def chat_api():
+    try:
+        data = request.get_json()
+        pergunta = data.get("mensagem", "")
+        resposta = chatbot.get_response(pergunta)
+        return jsonify({"resposta": str(resposta)})
+    except Exception as e:
+        return jsonify({"resposta": "Desculpe, estou com problemas. Tente novamente."})
+    
+    
+@app.route('/inicializar_recomendacoes')
+def inicializar_recomendacoes():
+    sucesso = sistema_recomendacao.gerar_matriz_compras()
+    if sucesso:
+        flash('✅ Sistema de recomendação inicializado com sucesso!')
+    else:
+        flash('⚠️  Sistema de recomendação usando modo de demonstração')
+    return redirect('/')
+
+@app.route('/testar_recomendacao')
+def testar_recomendacao():
+    """Rota para testar o sistema de recomendação"""
+    produtos = Produto.query.all()
+    if produtos:
+        recomendacoes = sistema_recomendacao.recomendar_produtos_similares(produtos[0].nome, 3)
+        resultado = f"Recomendações para '{produtos[0].nome}':<br>"
+        for prod in recomendacoes:
+            resultado += f"- {prod.nome}<br>"
+        return resultado
+    return "Nenhum produto para testar"
+
+# Rota para recomendações baseadas no usuário atual
+@app.route('/recomendacoes_personalizadas')
+def recomendacoes_personalizadas():
+    try:
+        if 'usuario' not in session:
+            # Se não está logado, retorna produtos mais populares (primeiros 4)
+            produtos = Produto.query.limit(4).all()
+        else:
+            # Para usuário logado: produtos que ele ainda não comprou
+            user_id = session['usuario']['id']
+            
+            # Busca produtos comprados pelo usuário
+            produtos_comprados_ids = db.session.query(HistoricoCompra.produto_id)\
+                .filter_by(user_id=user_id)\
+                .all()
+            ids_comprados = [pc[0] for pc in produtos_comprados_ids]
+            
+            if ids_comprados:
+                # Recomenda produtos similares aos que ele já comprou
+                produtos_recomendados = []
+                for produto_id in ids_comprados[:2]:  # Pega até 2 produtos comprados
+                    produto_base = Produto.query.get(produto_id)
+                    if produto_base:
+                        similares = sistema_recomendacao.recomendar_produtos_similares(produto_base.nome, 2)
+                        produtos_recomendados.extend(similares)
+                
+                # Remove duplicatas
+                produtos_recomendados = list(dict.fromkeys(produtos_recomendados))
+                produtos = produtos_recomendados[:4]  # Limita a 4 produtos
+            else:
+                # Se não comprou nada ainda, mostra produtos populares
+                produtos = Produto.query.limit(4).all()
+        
+        # Converte para JSON
+        resultados = []
+        for produto in produtos:
+            resultados.append({
+                'id': produto.id,
+                'nome': produto.nome,
+                'descricao': produto.descricao,
+                'preco': float(produto.preco),
+                'imagem': produto.imagem
+            })
+        
+        return jsonify(resultados)
+        
+    except Exception as e:
+        print(f"Erro em recomendacoes_personalizadas: {e}")
+        # Fallback: produtos básicos
+        produtos = Produto.query.limit(4).all()
+        resultados = [{
+            'id': p.id,
+            'nome': p.nome,
+            'descricao': p.descricao,
+            'preco': float(p.preco),
+            'imagem': p.imagem
+        } for p in produtos]
+        return jsonify(resultados)
+>>>>>>> b0c365858634ef9b51c400402a2b6361af0512bb
 
 # ROTA DO CHATBOT
 @app.route("/chat", methods=["POST"])

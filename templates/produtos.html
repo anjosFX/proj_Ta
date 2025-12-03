@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.jpg') }}">
   <style>
+<<<<<<< HEAD
     /* NOVOS ESTILOS - ADICIONE ISSO */
     .product-actions {
       display: flex;
@@ -218,6 +219,9 @@
         width: 100%;
       }
     }
+=======
+    
+>>>>>>> b0c365858634ef9b51c400402a2b6361af0512bb
   </style>
 </head>
 <body>
@@ -278,6 +282,7 @@
       {% endfor %}
     </ul>
 
+<<<<<<< HEAD
     <!-- Seção de Recomendações com IA -->
     <section class="recommended-section" id="secaoRecomendados">
       <h2 class="section-title">
@@ -298,6 +303,90 @@
         </div>
       </div>
     </section>
+=======
+
+      <!-- Seção de Produtos Recomendados -->
+<!-- Seção de Recomendações com IA -->
+<section class="recommended-section" id="secaoRecomendados">
+    <h2 class="section-title">
+         Recomendações inteligentes
+        <span class="recommended-badge">PARA VOCÊ</span>
+    </h2>
+    
+    <div style="text-align: center; margin-bottom: 20px;">
+        <small style="color: var(--accent);">
+            Sistema de recomendação baseado em similaridade de produtos
+        </small>
+    </div>
+    
+    <div class="recommended-products" id="produtosRecomendados">
+        <div style="text-align: center; padding: 40px;">
+            <p>🎯 Carregando recomendações inteligentes...</p>
+            <small>Analisando padrões de compra para sugestões personalizadas</small>
+        </div>
+    </div>
+</section>
+
+
+<script>
+// Carrega recomendações quando a página carrega
+document.addEventListener('DOMContentLoaded', function() {
+    carregarRecomendacoes();
+});
+
+async function carregarRecomendacoes() {
+    try {
+        const response = await fetch('/recomendacoes_personalizadas');
+        const produtos = await response.json();
+        
+        const container = document.getElementById('produtosRecomendados');
+        container.innerHTML = '';
+        
+        if (produtos.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <p> Sistema de IA em treinamento...</p>
+                    <small>Realize compras para melhorar as recomendações</small>
+                </div>
+            `;
+            return;
+        }
+        
+        produtos.forEach(produto => {
+            const card = document.createElement('div');
+            card.className = 'recommended-card';
+            card.innerHTML = `
+                <img src="${produto.imagem || '{{ url_for("static", filename="placeholder.png") }}'}" 
+                     alt="${produto.nome}" 
+                     onerror="this.src='{{ url_for("static", filename="placeholder.png") }}'">
+                <strong>${produto.nome}</strong>
+                <p>${produto.descricao}</p>
+                <p class="price">R$ ${produto.preco.toFixed(2)}</p>
+                ${'{{ session.usuario }}' ? `
+                <form action="/adicionar_carrinho" method="POST" class="buy-form">
+                    <input type="hidden" name="produto_id" value="${produto.id}">
+                    <input type="number" name="quantidade" value="1" min="1" hidden>
+                    <button type="submit">Adicionar</button>
+                </form>
+                ` : `
+                <p><em>Faça login para comprar</em></p>
+                `}
+            `;
+            container.appendChild(card);
+        });
+        
+    } catch (error) {
+        console.error('Erro ao carregar recomendações:', error);
+        document.getElementById('produtosRecomendados').innerHTML = `
+            <div style="text-align: center; padding: 40px;">
+                <p>⚠️ Erro ao carregar recomendações</p>
+                <small>Tente recarregar a página</small>
+            </div>
+        `;
+    }
+}
+</script>
+>>>>>>> b0c365858634ef9b51c400402a2b6361af0512bb
   </main>
 
   <!-- footer -->
@@ -305,6 +394,7 @@
     <p>© 2025 FeKnight Store Todos os direitos reservados</p>
   </footer>
 
+<<<<<<< HEAD
   <!-- Modal de detalhes do produto -->
   <div class="product-details-modal" id="productModal">
     <div class="modal-content">
@@ -449,6 +539,36 @@
     }
 
     // Chat
+=======
+  <!-- Chat Container -->
+<div class="chat-container">
+    <button class="chat-button" id="chatToggle">💬</button>
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+            <h3>Atendente Virtual - FeKnight</h3>
+            <button class="close-chat" id="closeChat">×</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot-message">
+                Olá! Sou o assistente virtual da FeKnight Store. Como posso ajudar?
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="Digite sua mensagem...">
+            <button id="sendMessage">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22 2L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // Elementos do chat
+>>>>>>> b0c365858634ef9b51c400402a2b6361af0512bb
     const chatToggle = document.getElementById('chatToggle');
     const chatWindow = document.getElementById('chatWindow');
     const closeChat = document.getElementById('closeChat');
@@ -456,6 +576,10 @@
     const sendMessage = document.getElementById('sendMessage');
     const chatMessages = document.getElementById('chatMessages');
 
+<<<<<<< HEAD
+=======
+    // Alternar visibilidade do chat
+>>>>>>> b0c365858634ef9b51c400402a2b6361af0512bb
     chatToggle.addEventListener('click', () => {
         chatWindow.style.display = chatWindow.style.display === 'flex' ? 'none' : 'flex';
         if (chatWindow.style.display === 'flex') {
@@ -463,29 +587,56 @@
         }
     });
 
+<<<<<<< HEAD
+=======
+    // Fechar chat
+>>>>>>> b0c365858634ef9b51c400402a2b6361af0512bb
     closeChat.addEventListener('click', () => {
         chatWindow.style.display = 'none';
     });
 
+<<<<<<< HEAD
     async function sendUserMessage() {
         const message = messageInput.value.trim();
         if (message) {
+=======
+    // Enviar mensagem para o ChatterBot
+    async function sendUserMessage() {
+        const message = messageInput.value.trim();
+        if (message) {
+            // Adicionar mensagem do usuário
+>>>>>>> b0c365858634ef9b51c400402a2b6361af0512bb
             const userMessage = document.createElement('div');
             userMessage.classList.add('message', 'user-message');
             userMessage.textContent = message;
             chatMessages.appendChild(userMessage);
             
+<<<<<<< HEAD
             messageInput.value = '';
             
+=======
+            // Limpar campo de entrada
+            messageInput.value = '';
+            
+            // Mostrar indicador de digitação
+>>>>>>> b0c365858634ef9b51c400402a2b6361af0512bb
             const typingIndicator = document.createElement('div');
             typingIndicator.classList.add('message', 'bot-message');
             typingIndicator.id = 'typing';
             typingIndicator.textContent = 'Digitando...';
             chatMessages.appendChild(typingIndicator);
             
+<<<<<<< HEAD
             chatMessages.scrollTop = chatMessages.scrollHeight;
             
             try {
+=======
+            // Rolar para baixo
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            try {
+                // Enviar mensagem para o backend Flask
+>>>>>>> b0c365858634ef9b51c400402a2b6361af0512bb
                 const response = await fetch('/chat', {
                     method: 'POST',
                     headers: {
@@ -498,8 +649,15 @@
                 
                 const data = await response.json();
                 
+<<<<<<< HEAD
                 document.getElementById('typing').remove();
                 
+=======
+                // Remover indicador de digitação
+                document.getElementById('typing').remove();
+                
+                // Adicionar resposta do bot
+>>>>>>> b0c365858634ef9b51c400402a2b6361af0512bb
                 const botMessage = document.createElement('div');
                 botMessage.classList.add('message', 'bot-message');
                 botMessage.textContent = data.resposta;
@@ -507,24 +665,43 @@
                 
             } catch (error) {
                 console.error('Erro:', error);
+<<<<<<< HEAD
                 document.getElementById('typing').remove();
                 
+=======
+                // Remover indicador de digitação
+                document.getElementById('typing').remove();
+                
+                // Mensagem de erro
+>>>>>>> b0c365858634ef9b51c400402a2b6361af0512bb
                 const errorMessage = document.createElement('div');
                 errorMessage.classList.add('message', 'bot-message');
                 errorMessage.textContent = 'Desculpe, estou com problemas técnicos. Tente novamente.';
                 chatMessages.appendChild(errorMessage);
             }
             
+<<<<<<< HEAD
+=======
+            // Rolar para baixo novamente
+>>>>>>> b0c365858634ef9b51c400402a2b6361af0512bb
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
     }
 
+<<<<<<< HEAD
     sendMessage.addEventListener('click', sendUserMessage);
+=======
+    // Enviar mensagem ao clicar no botão
+    sendMessage.addEventListener('click', sendUserMessage);
+
+    // Enviar mensagem ao pressionar Enter
+>>>>>>> b0c365858634ef9b51c400402a2b6361af0512bb
     messageInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             sendUserMessage();
         }
     });
+<<<<<<< HEAD
 
     // FUNÇÕES DO MODAL
     async function openProductModal(produtoId) {
@@ -610,5 +787,8 @@
       }
     });
   </script>
+=======
+</script>
+>>>>>>> b0c365858634ef9b51c400402a2b6361af0512bb
 </body>
 </html>

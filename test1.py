@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # gerenciar_produtos.py
 from app import app, db, Produto, Usuario, Carrinho, HistoricoCompra
 
@@ -204,3 +205,14 @@ def mostrar_estatisticas():
 
 if __name__ == "__main__":
     menu_principal()
+=======
+from app import app, db, Produto, Carrinho
+
+with app.app_context():
+    # Ver todos os produtos
+    produtos = Produto.query.all()
+    for p in produtos:
+        print(f"ID: {p.id} - {p.nome} - R$ {p.preco}")
+    
+    
+>>>>>>> b0c365858634ef9b51c400402a2b6361af0512bb
