@@ -5,6 +5,220 @@
   <title>Loja de Camisas</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.jpg') }}">
+  <style>
+    /* NOVOS ESTILOS - ADICIONE ISSO */
+    .product-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      width: 100%;
+    }
+    
+    .btn-details {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+      flex: 1;
+    }
+    
+    .btn-details:hover {
+      background: rgba(132, 88, 179, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    .buy-form button {
+      background: var(--btn-bg);
+      color: var(--text);
+      border: 1px solid var(--accent);
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background .2s;
+      flex: 1;
+    }
+    
+    .buy-form button:hover {
+      background: var(--btn-hover);
+    }
+    
+    /* Modal */
+    .product-details-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 2000;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    
+    .modal-content {
+      background: var(--card-bg);
+      max-width: 900px;
+      margin: 40px auto;
+      border-radius: 15px;
+      padding: 30px;
+      position: relative;
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 40px rgba(132, 88, 179, 0.5);
+    }
+    
+    .close-modal {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 28px;
+      cursor: pointer;
+      z-index: 10;
+    }
+    
+    .product-details-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+    }
+    
+    .product-image-section {
+      flex: 1;
+      min-width: 300px;
+    }
+    
+    .product-image-main {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .product-info-section {
+      flex: 1;
+      min-width: 300px;
+    }
+    
+    .product-title {
+      color: var(--accent);
+      font-size: 2rem;
+      margin-bottom: 15px;
+      text-shadow: 0 0 10px rgba(132, 88, 179, 0.5);
+    }
+    
+    .product-price {
+      font-size: 1.8rem;
+      color: #00ff88;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+    
+    .product-meta {
+      display: flex;
+      gap: 15px;
+      margin: 15px 0;
+      flex-wrap: wrap;
+    }
+    
+    .meta-tag {
+      background: rgba(132, 88, 179, 0.2);
+      padding: 5px 15px;
+      border-radius: 20px;
+      border: 1px solid var(--accent);
+    }
+    
+    .product-description {
+      line-height: 1.6;
+      margin: 25px 0;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      border-left: 4px solid var(--accent);
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+    
+    .btn-buy {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      flex: 1;
+    }
+    
+    .btn-buy:hover {
+      background: #9d6de3;
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(132, 88, 179, 0.4);
+    }
+    
+    .similar-products {
+      margin-top: 50px;
+      padding-top: 30px;
+      border-top: 1px solid var(--border);
+    }
+    
+    .similar-title {
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    
+    .similar-grid {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+      padding: 10px 0;
+    }
+    
+    .similar-card {
+      min-width: 200px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    
+    .similar-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-5px);
+    }
+    
+    @media (max-width: 768px) {
+      .modal-content {
+        margin: 20px;
+        padding: 20px;
+      }
+      
+      .product-title {
+        font-size: 1.5rem;
+      }
+      
+      .action-buttons, .product-actions {
+        flex-direction: column;
+      }
+      
+      .btn-buy, .buy-form button, .btn-details {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
   <!-- navbar -->
@@ -18,41 +232,383 @@
         <a href="/carrinho">Carrinho</a>
         <a href="/perfil">Perfil</a>
         <a href="/logout">Sair</a>
+        <a href="/chat">chat</a>
+        <a href="/faq">FAQ</a>
       {% else %}
         <a href="/login">Login</a>
         <a href="/cadastro">Cadastro</a>
+      {% endif %}
+      {% if session.usuario and session.usuario.is_admin %}
+        <a href="/dashboard" class="admin-link">
+            <i class="fas fa-crown"></i> Dashboard Admin
+        </a>
       {% endif %}
     </div>
   </nav>
 
   <!-- conteúdo -->
   <main class="content">
-    <h1>Camisas Disponíveis</h1>
+    <h1>Produtos Disponíveis</h1>
     <ul class="products">
       {% for produto in produtos %}
       <li class="product-card">
-        <img src="{{ produto.imagem or url_for('static', filename='placeholder.png') }}" alt="{{ produto.nome }}">
+        <img src="{{ produto.imagem or url_for('static', filename='placeholder.png') }}" 
+             alt="{{ produto.nome }}"
+             onclick="openProductModal({{ produto.id }})"
+             style="cursor: pointer;">
         <strong>{{ produto.nome }}</strong>
-        <p>{{ produto.descricao }}</p>
+        <p>{{ produto.descricao[:80] }}{% if produto.descricao|length > 80 %}...{% endif %}</p>
         <p class="price">R$ {{ produto.preco }}</p>
 
         {% if session.usuario %}
-        <form action="/adicionar_carrinho" method="POST" class="buy-form">
-          <input type="hidden" name="produto_id" value="{{ produto.id }}">
-          <input type="number" name="quantidade" value="1" min="1" hidden>
-          <button type="submit">Adicionar</button>
-        </form>
+        <div class="product-actions">
+          <form action="/adicionar_carrinho" method="POST" class="buy-form">
+            <input type="hidden" name="produto_id" value="{{ produto.id }}">
+            <input type="number" name="quantidade" value="1" min="1" hidden>
+            <button type="submit">🛒 Adicionar</button>
+          </form>
+          <button class="btn-details" onclick="openProductModal({{ produto.id }})">
+            🔍 Detalhes
+          </button>
+        </div>
         {% else %}
         <p><em>Faça login para comprar</em></p>
         {% endif %}
       </li>
       {% endfor %}
     </ul>
+
+    <!-- Seção de Recomendações com IA -->
+    <section class="recommended-section" id="secaoRecomendados">
+      <h2 class="section-title">
+        Recomendações inteligentes
+        <span class="recommended-badge">PARA VOCÊ</span>
+      </h2>
+      
+      <div style="text-align: center; margin-bottom: 20px;">
+        <small style="color: var(--accent);">
+          Sistema de recomendação baseado em similaridade de produtos
+        </small>
+      </div>
+      
+      <div class="recommended-products" id="produtosRecomendados">
+        <div style="text-align: center; padding: 40px;">
+          <p>🎯 Carregando recomendações inteligentes...</p>
+          <small>Analisando padrões de compra para sugestões personalizadas</small>
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- footer -->
   <footer class="footer">
     <p>© 2025 FeKnight Store Todos os direitos reservados</p>
   </footer>
+
+  <!-- Modal de detalhes do produto -->
+  <div class="product-details-modal" id="productModal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeProductModal()">×</button>
+      
+      <div class="product-details-container">
+        <div class="product-image-section">
+          <img id="modalProductImage" src="" alt="" class="product-image-main">
+          <div class="product-meta">
+            <span class="meta-tag" id="modalProductGender"></span>
+            <span class="meta-tag" id="modalProductNationality"></span>
+            <span class="meta-tag" id="modalProductTeam"></span>
+            <span class="meta-tag" id="modalProductCategory"></span>
+          </div>
+        </div>
+        
+        <div class="product-info-section">
+          <h1 class="product-title" id="modalProductName"></h1>
+          
+          <div class="product-price" id="modalProductPrice"></div>
+          
+          <div class="product-description" id="modalProductDescription"></div>
+          
+          <div class="action-buttons">
+            {% if session.usuario %}
+            <form action="/adicionar_carrinho" method="POST" style="flex: 1;">
+              <input type="hidden" name="produto_id" id="modalProductId">
+              <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px;">Quantidade:</label>
+                <input type="number" name="quantidade" value="1" min="1" 
+                       style="width: 80px; padding: 10px; background: var(--btn-bg); color: var(--text); border: 1px solid var(--border); border-radius: 5px;">
+              </div>
+              <button type="submit" class="btn-buy">🛒 Adicionar ao Carrinho</button>
+            </form>
+            {% else %}
+            <p style="color: #ff6b6b; padding: 15px; background: rgba(255, 107, 107, 0.1); border-radius: 8px;">
+              ⚠️ Faça <a href="/login" style="color: var(--accent);">login</a> para comprar este produto
+            </p>
+            {% endif %}
+            <button class="btn-details" onclick="closeProductModal()" style="background: transparent; border: 1px solid var(--border);">
+              ← Voltar
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="similar-products">
+        <h3 class="similar-title">🎯 Produtos similares (recomendados por IA)</h3>
+        <div class="similar-grid" id="similarProducts"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Container -->
+  <div class="chat-container">
+    <button class="chat-button" id="chatToggle">💬</button>
+    <div class="chat-window" id="chatWindow">
+      <div class="chat-header">
+        <h3>Atendente Virtual - FeKnight</h3>
+        <button class="close-chat" id="closeChat">×</button>
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="message bot-message">
+          Olá! Sou o assistente virtual da FeKnight Store. Como posso ajudar?
+        </div>
+      </div>
+      <div class="chat-input">
+        <input type="text" id="messageInput" placeholder="Digite sua mensagem...">
+        <button id="sendMessage">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22 2L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Carrega recomendações
+    document.addEventListener('DOMContentLoaded', function() {
+        carregarRecomendacoes();
+    });
+
+    async function carregarRecomendacoes() {
+        try {
+            const response = await fetch('/recomendacoes_personalizadas');
+            const produtos = await response.json();
+            
+            const container = document.getElementById('produtosRecomendados');
+            container.innerHTML = '';
+            
+            if (produtos.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <p> Sistema de IA em treinamento...</p>
+                        <small>Realize compras para melhorar as recomendações</small>
+                    </div>
+                `;
+                return;
+            }
+            
+            produtos.forEach(produto => {
+                const card = document.createElement('div');
+                card.className = 'recommended-card';
+                card.innerHTML = `
+                    <img src="${produto.imagem || '{{ url_for("static", filename="placeholder.png") }}'}" 
+                         alt="${produto.nome}" 
+                         onerror="this.src='{{ url_for("static", filename="placeholder.png") }}'"
+                         style="cursor: pointer;"
+                         onclick="openProductModal(${produto.id})">
+                    <strong>${produto.nome}</strong>
+                    <p>${produto.descricao}</p>
+                    <p class="price">R$ ${produto.preco.toFixed(2)}</p>
+                    ${'{{ session.usuario }}' ? `
+                    <div class="product-actions">
+                        <form action="/adicionar_carrinho" method="POST" class="buy-form">
+                            <input type="hidden" name="produto_id" value="${produto.id}">
+                            <input type="number" name="quantidade" value="1" min="1" hidden>
+                            <button type="submit">Adicionar</button>
+                        </form>
+                        <button class="btn-details" onclick="openProductModal(${produto.id})">
+                            🔍 Detalhes
+                        </button>
+                    </div>
+                    ` : `
+                    <p><em>Faça login para comprar</em></p>
+                    `}
+                `;
+                container.appendChild(card);
+            });
+            
+        } catch (error) {
+            console.error('Erro ao carregar recomendações:', error);
+            document.getElementById('produtosRecomendados').innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <p>⚠️ Erro ao carregar recomendações</p>
+                    <small>Tente recarregar a página</small>
+                </div>
+            `;
+        }
+    }
+
+    // Chat
+    const chatToggle = document.getElementById('chatToggle');
+    const chatWindow = document.getElementById('chatWindow');
+    const closeChat = document.getElementById('closeChat');
+    const messageInput = document.getElementById('messageInput');
+    const sendMessage = document.getElementById('sendMessage');
+    const chatMessages = document.getElementById('chatMessages');
+
+    chatToggle.addEventListener('click', () => {
+        chatWindow.style.display = chatWindow.style.display === 'flex' ? 'none' : 'flex';
+        if (chatWindow.style.display === 'flex') {
+            messageInput.focus();
+        }
+    });
+
+    closeChat.addEventListener('click', () => {
+        chatWindow.style.display = 'none';
+    });
+
+    async function sendUserMessage() {
+        const message = messageInput.value.trim();
+        if (message) {
+            const userMessage = document.createElement('div');
+            userMessage.classList.add('message', 'user-message');
+            userMessage.textContent = message;
+            chatMessages.appendChild(userMessage);
+            
+            messageInput.value = '';
+            
+            const typingIndicator = document.createElement('div');
+            typingIndicator.classList.add('message', 'bot-message');
+            typingIndicator.id = 'typing';
+            typingIndicator.textContent = 'Digitando...';
+            chatMessages.appendChild(typingIndicator);
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        mensagem: message
+                    })
+                });
+                
+                const data = await response.json();
+                
+                document.getElementById('typing').remove();
+                
+                const botMessage = document.createElement('div');
+                botMessage.classList.add('message', 'bot-message');
+                botMessage.textContent = data.resposta;
+                chatMessages.appendChild(botMessage);
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                document.getElementById('typing').remove();
+                
+                const errorMessage = document.createElement('div');
+                errorMessage.classList.add('message', 'bot-message');
+                errorMessage.textContent = 'Desculpe, estou com problemas técnicos. Tente novamente.';
+                chatMessages.appendChild(errorMessage);
+            }
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    }
+
+    sendMessage.addEventListener('click', sendUserMessage);
+    messageInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendUserMessage();
+        }
+    });
+
+    // FUNÇÕES DO MODAL
+    async function openProductModal(produtoId) {
+      try {
+        const modal = document.getElementById('productModal');
+        modal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        
+        const response = await fetch(`/api/produto/${produtoId}`);
+        const data = await response.json();
+        
+        document.getElementById('modalProductName').textContent = data.nome;
+        document.getElementById('modalProductPrice').textContent = `R$ ${data.preco}`;
+        document.getElementById('modalProductDescription').textContent = data.descricao;
+        document.getElementById('modalProductImage').src = data.imagem || '{{ url_for("static", filename="placeholder.png") }}';
+        document.getElementById('modalProductId').value = data.id;
+        
+        document.getElementById('modalProductGender').textContent = `👕 ${data.genero}`;
+        document.getElementById('modalProductNationality').textContent = `📍 ${data.nacionalidade}`;
+        document.getElementById('modalProductTeam').textContent = `⚽ ${data.equipe}`;
+        document.getElementById('modalProductCategory').textContent = `🏷️ ${data.categoria}`;
+        
+        await loadSimilarProducts(produtoId);
+        
+      } catch (error) {
+        console.error('Erro ao carregar detalhes:', error);
+        alert('Erro ao carregar detalhes do produto');
+        closeProductModal();
+      }
+    }
+
+    function closeProductModal() {
+      const modal = document.getElementById('productModal');
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+
+    async function loadSimilarProducts(produtoId) {
+      try {
+        const response = await fetch(`/api/produto/${produtoId}/similares`);
+        const similares = await response.json();
+        
+        const container = document.getElementById('similarProducts');
+        container.innerHTML = '';
+        
+        if (similares.length === 0) {
+          container.innerHTML = '<p style="padding: 20px; color: #888;">Nenhum produto similar encontrado</p>';
+          return;
+        }
+        
+        similares.forEach(produto => {
+          const card = document.createElement('div');
+          card.className = 'similar-card';
+          card.onclick = () => openProductModal(produto.id);
+          card.style.cursor = 'pointer';
+          
+          card.innerHTML = `
+            <img src="${produto.imagem || '{{ url_for("static", filename="placeholder.png") }}'}" 
+                 alt="${produto.nome}" 
+                 style="width: 100%; height: 120px; object-fit: cover; border-radius: 5px;">
+            <strong style="display: block; margin: 10px 0 5px;">${produto.nome}</strong>
+            <small style="color: var(--accent);">R$ ${produto.preco}</small>
+          `;
+          
+          container.appendChild(card);
+        });
+        
+      } catch (error) {
+        console.error('Erro ao carregar similares:', error);
+      }
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById('productModal');
+      if (event.target === modal) {
+        closeProductModal();
+      }
+    }
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeProductModal();
+      }
+    });
+  </script>
 </body>
 </html>

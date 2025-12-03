@@ -149,3 +149,262 @@ body {
 @media (min-width: 1200px) {
   .product-card { width: calc(25% - 40px); }
 }
+
+
+/* Estilos para o chat flutuante */
+    .chat-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+
+    .chat-button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .chat-button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 16px rgba(132, 88, 179, 0.5);
+    }
+
+    .chat-window {
+      position: absolute;
+      bottom: 70px;
+      right: 0;
+      width: 300px;
+      height: 400px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      background: var(--accent);
+      color: white;
+      padding: 12px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chat-header h3 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .close-chat {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .message {
+      padding: 8px 12px;
+      border-radius: 18px;
+      max-width: 80%;
+      word-wrap: break-word;
+    }
+
+    .bot-message {
+      background: var(--btn-bg);
+      align-self: flex-start;
+      border-bottom-left-radius: 5px;
+    }
+
+    .user-message {
+      background: var(--accent);
+      align-self: flex-end;
+      border-bottom-right-radius: 5px;
+    }
+
+    .chat-input {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--btn-bg);
+      color: var(--text);
+      outline: none;
+    }
+
+    .chat-input button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      margin-left: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chat-input button:hover {
+      background: #6d4a9c;
+    }
+
+    @media (max-width: 480px) {
+      .chat-window {
+        width: 280px;
+        height: 350px;
+      }
+    }
+/* Estilos para a seção de recomendados com IA */
+.recommended-section {
+    margin: 60px 0 40px;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, var(--card-bg) 0%, #1a1625 100%);
+    border-top: 2px solid var(--accent);
+    border-bottom: 2px solid var(--accent);
+    position: relative;
+}
+
+.section-title {
+    text-align: center;
+    color: var(--accent);
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-shadow: 
+        0 0 10px rgba(132, 88, 179, 0.6),
+        0 0 20px rgba(132, 88, 179, 0.4);
+}
+
+.recommended-badge {
+    position: absolute;
+    top: -15px;
+    right: 20px;
+    background: linear-gradient(45deg, var(--accent), #6d4a9c);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.recommended-products {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    justify-content: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.recommended-card {
+    background: var(--card-bg);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    width: calc(100% / 1 - 40px);
+    max-width: 250px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.recommended-card::before {
+    content: 'Recomendado';
+    position: absolute;
+    top: 12px;
+    left: -30px;
+    background: var(--accent);
+    color: white;
+    padding: 6px 40px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    transform: rotate(-45deg);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.recommended-card:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 
+        0 12px 30px rgba(0, 0, 0, 0.5),
+        0 0 30px rgba(132, 88, 179, 0.7);
+}
+
+.recommended-card img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 1px solid var(--border);
+}
+
+.recommended-card .price {
+    color: var(--accent);
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin: 12px 0;
+}
+
+.recommended-card .buy-form button {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.recommended-card .buy-form button:hover {
+    background: #9d6de3;
+    transform: translateY(-2px);
+}
+
+/* Responsividade */
+@media (min-width: 600px) {
+    .recommended-card { width: calc(50% - 40px); }
+}
+@media (min-width: 900px) {
+    .recommended-card { width: calc(33.33% - 40px); }
+}
+@media (min-width: 1200px) {
+    .recommended-card { width: calc(25% - 40px); }
+}
