@@ -1015,6 +1015,10 @@ if __name__ == '__main__':
         # Inicializa o sistema de recomendação automaticamente
         print("Inicializando sistema de recomendação...")
         sistema_recomendacao.gerar_matriz_compras()
-    app.run(debug=True)
+    
+        # PARA RENDER.COM - Use porta da variável de ambiente
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
+    
 
-
+    
