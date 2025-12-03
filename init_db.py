@@ -1,6 +1,17 @@
 from app import app, db, Produto
 
 def criar_popular():
+    """
+    Cria o banco SQLite e popula com produtos de exemplo
+
+    Importante: coloca o contexto do Flask com app.app_context()
+    para que o banco seja criado corretamente.
+
+    Adiciona quatro produtos de exemplo ao banco.
+
+    Se o banco j   existir, n o  ser  criado novamente.
+    Se o banco j   tiver produtos, n o  ser o  sobreescrito.
+    """
     with app.app_context():   # <<< IMPORTANTE: coloca o contexto do Flask aqui
         db.create_all()
 

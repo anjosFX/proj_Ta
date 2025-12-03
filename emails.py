@@ -4,6 +4,13 @@ from app import mail
 
 # 1. Confirmação de cadastro
 def enviar_confirmacao_cadastro(destino, username):
+    """
+    Envia um e-mail de confirmação de cadastro para o usuário com o nome de usuário especificado.
+
+    Parameters:
+    destino (str): E-mail do usuário que realizou o cadastro.
+    username (str): Nome do usuário que realizou o cadastro.
+    """
     msg = Message(
         subject="Bem-vindo à Loja de Camisas!",
         recipients=[destino],
@@ -13,6 +20,15 @@ def enviar_confirmacao_cadastro(destino, username):
 
 # 2. Confirmação de pedido
 def enviar_confirmacao_pedido(destino, pedido_id, total, itens):
+    """
+    Envia um e-mail de confirmação de pedido para o usuário com o ID do pedido, o total do pedido e a lista de itens.
+
+    Parameters:
+    destino (str): E-mail do usuário que realizou o pedido.
+    pedido_id (int): ID do pedido.
+    total (float): Total do pedido.
+    itens (list): Lista de itens do pedido.
+    """
     msg = Message(
         subject=f"Confirmação do Pedido #{pedido_id}",
         recipients=[destino]
@@ -27,6 +43,13 @@ def enviar_confirmacao_pedido(destino, pedido_id, total, itens):
 
 # 3. Recuperação de senha
 def enviar_recuperacao_senha(destino, link):
+    """
+    Envia um e-mail de recuperação de senha para o usuário com o link especificado.
+
+    Parameters:
+    destino (str): E-mail do usuário que realizou a recuperação de senha.
+    link (str): Link para redefinir a senha.
+    """
     msg = Message(
         subject="Recuperação de Senha",
         recipients=[destino],

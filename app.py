@@ -100,6 +100,14 @@ class HistoricoCompra(db.Model):
     
 class SistemaRecomendacao:
     def __init__(self):
+        """
+        Inicializa o objeto do sistema de recomendação.
+
+        Atributos:
+            sim_df (pd.DataFrame): Matriz de similaridade entre produtos
+            produto_matrix (pd.DataFrame): Matriz de produtos com características
+
+        """
         self.sim_df = None
         self.produto_matrix = None
         
@@ -369,6 +377,8 @@ print("Chatbot treinado e pronto!")
 # Rotas (Exemplo login, produtos, carrinho)
 @app.route('/')
 def produtos():
+    """Página principal da loja, lista todos os produtos disponíveis
+    """
     produtos = Produto.query.all()
     return render_template('produtos.html', produtos=produtos)
 
@@ -402,6 +412,10 @@ def criar_admin():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """
+    Página de login da loja, verifica se o email e senha estao corretos e redireciona para a página de Perfil ou Dashboard se for administrador.
+    """
+
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
@@ -429,6 +443,10 @@ def login():
 
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
+    """
+    Página de cadastro da loja, verifica se o usuário já existe e envia e-mail de confirmação.
+    Se o cadastro for bem-sucedido, redireciona para a página de login.
+    """
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']
@@ -457,6 +475,12 @@ def cadastro():
 
 @app.route('/perfil', methods=['GET', 'POST'])
 def perfil():
+    """
+    Página de perfil do usuário, onde pode atualizar suas informações.
+    Se o método for POST, atualiza as informações do usuário.
+    Se não estiver logado, redireciona para a página de login.
+    Se estiver logado, renderiza a página de perfil com as informações do usuário.
+    """
     if 'usuario' not in session:
         return redirect('/login')
     usuario = Usuario.query.get(session['usuario']['id'])
@@ -474,6 +498,12 @@ def perfil():
 
 @app.route('/excluir', methods=['POST'])
 def excluir():
+    """
+    Exclui a conta do usuário logado.
+    Se o usuário estiver logado, exclui a conta e limpa a sessão.
+    Se não estiver logado, não faz nada.
+    Redireciona para a página de login.
+    """
     if 'usuario' in session:
         usuario = Usuario.query.get(session['usuario']['id'])
         db.session.delete(usuario)
@@ -484,11 +514,21 @@ def excluir():
 
 @app.route('/logout')
 def logout():
+    """
+    Limpa a sessão do usuário e redireciona para a página de login.
+    """
     session.clear()
     return redirect('/login')
 
 @app.route('/adicionar_carrinho', methods=['POST'])
 def adicionar_carrinho():
+    """
+    Adiciona um item ao carrinho do usuário logado.
+    Se o usuário estiver logado, verifica se o item já existe no carrinho e
+    incrementa a quantidade se sim, ou adiciona um novo item se não.
+    Se não estiver logado, redireciona para a página de login.
+    Redireciona para a página de Início após adicionar o item.
+    """
     if 'usuario' not in session:
         return redirect('/login')
     user_id = session['usuario']['id']
@@ -508,6 +548,12 @@ def adicionar_carrinho():
 
 @app.route('/carrinho')
 def ver_carrinho():
+    """
+    Verifica se o usuário está logado e, se sim, retorna a página do carrinho
+    com todos os itens do carrinho do usuário e o valor total do carrinho.
+    Se o usuário não estiver logado, redireciona para a página de login.
+    """
+
     if 'usuario' not in session:
         return redirect('/login')
 
@@ -520,6 +566,12 @@ def ver_carrinho():
 
 @app.route('/remover_carrinho', methods=['POST'])
 def remover_carrinho():
+    """
+    Remove um item do carrinho do usuário logado.
+    Recebe o item_id como parâmetro e remove o item do carrinho.
+    Se o item não existir, não faz nada.
+    Redireciona para a página de Carrinho após remover o item.
+    """
     item_id = int(request.form['item_id'])
     item = Carrinho.query.get(item_id)
     if item:
@@ -529,6 +581,14 @@ def remover_carrinho():
 
 @app.route('/atualizar_carrinho_geral', methods=['POST'])
 def atualizar_carrinho_geral():
+    """
+    Atualiza o carrinho do usuário logado com base nos dados
+    enviados via POST.
+    Recebe a lista de quantidades para cada item do carrinho
+    e atualiza a quantidade dos itens no carrinho.
+    Se a quantidade for zero ou menor, exclui o item do carrinho.
+    Redireciona para a página de Carrinho após atualizar o carrinho.
+    """
     if 'usuario' not in session:
         return redirect('/login')
 
@@ -553,6 +613,14 @@ def atualizar_carrinho_geral():
 
 @app.route('/finalizar_compra', methods=['POST'])
 def finalizar_compra():
+    """
+    Finaliza a compra do usuário logado e registra no histórico
+    de compras para o sistema de recomendação.
+    Redireciona para a página de Carrinho após finalizar a compra.
+    Envia um e-mail de confirmação do pedido para o usuário.
+    Atualiza o sistema de recomendação com base nos dados do histórico
+    de compras.
+    """
     if 'usuario' not in session:
         return redirect('/login')
 
@@ -591,6 +659,13 @@ def finalizar_compra():
 
 @app.route('/recuperar', methods=['GET', 'POST'])
 def recuperar():
+    """
+    Página de recuperação de senha.
+    
+    Recebe o e-mail do usuário e verifica se ele existe no banco de dados.
+    Se existir, gera um token/link temporário e envia um e-mail com o link para o usuário.
+    Se não existir, mostra uma mensagem de erro.
+    """
     if request.method == 'POST':
         email = request.form['email']
         usuario = Usuario.query.filter_by(email=email).first()
@@ -616,6 +691,11 @@ def recuperar():
 
 @app.route('/faq', methods=['GET', 'POST'])
 def faq():
+    """
+    Página de FAQ (Perguntas Frequentes).
+    
+    Renderiza a página de FAQ com as perguntas e respostas mais comuns.
+    """
     return render_template('faq.html')
 
 # ROTA DO CHATBOT
@@ -654,6 +734,14 @@ def testar_recomendacao():
 # Rota para recomendações baseadas no usuário atual
 @app.route('/recomendacoes_personalizadas')
 def recomendacoes_personalizadas():
+    """
+    Retorna uma lista de produtos recomendados baseados nas preferências do usuário atual.
+
+    Se o usuário não está logado, retorna produtos baseados em características populares.
+    Se o usuário não comprou nada ainda, retorna produtos baseados em características gerais.
+    Se o usuário comprou algo, usa o novo sistema de recomendação baseado em preferências.
+    """
+    
     try:
         if 'usuario' not in session:
             # Se não está logado, retorna produtos baseados em características populares
@@ -748,6 +836,12 @@ def _analisar_preferencias_usuario(self, user_id):
 @app.route('/dashboard')
 def dashboard():
     # Verifica se está logado E se é admin
+    """
+    Verifica se está logado E se é admin
+    Se estiver logado como admin, renderiza o painel de controle com dados em tempo real
+    Se não estiver logado, redireciona para a página de login
+    Se estiver logado como usuário normal, redireciona para a página de inicio
+    """
     if 'usuario' not in session:
         return redirect('/login')
     
